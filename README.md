@@ -12,7 +12,5 @@ Nhóm gồm 4 thành viên:
 
 Lê Văn Hữu Phúc
 Trần Thị B
-Lê Văn C
-Phúc Lê
-
-famfl amwlf a
+Lê Hoàng Nhựt-24521284
+Hoàng Thi D
