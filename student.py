@@ -1,12 +1,15 @@
 # sinh_vien.py
 
 class SinhVien:
-    def __init__(self, mssv, ten, tuoi=None, lop=None, diem_tb=0.0):
+    VALID_STATUS = ["Đang học", "Bảo lưu", "Đã tốt nghiệp"]
+
+    def __init__(self, mssv, ten, tuoi=None, lop=None, diem_tb=0.0, trang_thai="Đang học"):
         self.mssv = mssv
         self.ten = ten
         self.tuoi = tuoi
         self.lop = lop
         self.diem_tb = diem_tb
+        self.set_trang_thai(trang_thai)
 
     # ================== GETTER / SETTER ==================
     def set_ten(self, ten):
@@ -23,6 +26,11 @@ class SinhVien:
         if diem < 0 or diem > 10:
             raise ValueError("Điểm phải từ 0 đến 10")
         self.diem_tb = diem
+
+    def set_trang_thai(self, trang_thai):
+        if trang_thai not in SinhVien.VALID_STATUS:
+            raise ValueError(f"Trạng thái không hợp lệ! {SinhVien.VALID_STATUS}")
+        self.trang_thai = trang_thai
 
     # ================== NGHIỆP VỤ ==================
     def xep_loai(self):
@@ -49,27 +57,28 @@ class SinhVien:
             f"Tuổi: {self.tuoi} | "
             f"Lớp: {self.lop} | "
             f"Điểm TB: {self.diem_tb:.2f} | "
-            f"Xếp loại: {self.xep_loai()}"
+            f"Xếp loại: {self.xep_loai()} | "
+            f"Trạng thái: {self.trang_thai}"
         )
 
     # ================== CHUYỂN ĐỔI DỮ LIỆU ==================
     def to_dict(self):
-        """Chuyển object -> dict (dùng để lưu file JSON)"""
         return {
             "mssv": self.mssv,
             "ten": self.ten,
             "tuoi": self.tuoi,
             "lop": self.lop,
-            "diem_tb": self.diem_tb
+            "diem_tb": self.diem_tb,
+            "trang_thai": self.trang_thai
         }
 
     @staticmethod
     def from_dict(data):
-        """Tạo object từ dict"""
         return SinhVien(
             data.get("mssv"),
             data.get("ten"),
             data.get("tuoi"),
             data.get("lop"),
-            data.get("diem_tb", 0.0)
+            data.get("diem_tb", 0.0),
+            data.get("trang_thai", "Đang học")
         )
