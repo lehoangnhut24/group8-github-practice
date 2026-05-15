@@ -34,6 +34,3 @@ def tim_kiem_sinh_vien(tu_khoa):
     if not tim_thay:
         print("Không tìm thấy sinh viên nào phù hợp!")
 
-    them_sinh_vien("24521284", "Lê Hoàng Nhựt")
-    hien_thi_sinh_vien()
-    tim_kiem_sinh_vien("Nhựt")
