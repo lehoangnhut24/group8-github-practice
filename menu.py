@@ -7,102 +7,110 @@ class QuanLySinhVien:
         self.file_path = file_path
         self.danh_sach = self.load_data()
 
-    # ================== XỬ LÝ FILE ==================
     def load_data(self):
-        if not os.path.exists(self.file_path):
-            return []
-        try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return [SinhVien.from_dict(item) for item in data]
-        except Exception as e:
-            print(f"Lỗi đọc file: {e}")
-            return []
+        """Đọc dữ liệu từ file JSON, trả về danh sách đối tượng SinhVien"""
+        if os.path.exists(self.file_path):
+            try:
+                with open(self.file_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return [SinhVien.from_dict(item) for item in data]
+            except (json.JSONDecodeError, Exception):
+                return []
+        return []
 
     def save_data(self):
+        """Lưu danh sách hiện tại xuống file JSON"""
         try:
             with open(self.file_path, "w", encoding="utf-8") as f:
                 json.dump([sv.to_dict() for sv in self.danh_sach], f, ensure_ascii=False, indent=4)
         except Exception as e:
-            print(f"Lỗi lưu file: {e}")
+            print(f"Lỗi khi lưu dữ liệu: {e}")
 
-    # ================== CHỨC NĂNG ==================
-    def them_sinh_vien(self):
-        print("\n--- THÊM SINH VIÊN MỚI ---")
-        mssv = input("Nhập MSSV: ")
-        # Kiểm tra trùng MSSV
-        if any(sv.mssv == mssv for sv in self.danh_sach):
-            print("Lỗi: MSSV đã tồn tại!")
-            return
-
-        ten = input("Nhập tên: ")
-        try:
-            tuoi = int(input("Nhập tuổi: "))
-            lop = input("Nhập lớp: ")
-            diem = float(input("Nhập điểm TB: "))
-            
-            new_sv = SinhVien(mssv, ten, tuoi, lop, diem)
-            self.danh_sach.append(new_sv)
+    def xoa_sinh_vien(self, mssv):
+        """Xóa sinh viên theo mã số và cập nhật lại file"""
+        ban_dau = len(self.danh_sach)
+        self.danh_sach = [sv for sv in self.danh_sach if sv.mssv != mssv]
+        if len(self.danh_sach) < ban_dau:
             self.save_data()
-            print("Thêm thành công!")
-        except ValueError as e:
-            print(f"Dữ liệu không hợp lệ: {e}")
+            return True
+        return False
 
-    def hien_thi_danh_sach(self):
-        print("\n--- DANH SÁCH SINH VIÊN ---")
-        if not self.danh_sach:
-            print("Danh sách trống.")
-        for sv in self.danh_sach:
-            print(sv)
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-    def tim_kiem_sinh_vien(self):
-        tu_khoa = input("\nNhập MSSV hoặc Tên cần tìm: ")
-        ket_qua = [sv for sv in self.danh_sach if sv.matches(tu_khoa)]
-        
-        print(f"\nTìm thấy {len(ket_qua)} kết quả:")
-        for sv in ket_qua:
-            print(sv)
+def hien_thi_menu():
+    print("\n" + "="*55)
+    print(f"{'CHƯƠNG TRÌNH QUẢN LÝ SINH VIÊN':^55}")
+    print("="*55)
+    print(" 1. Hiển thị danh sách sinh viên")
+    print(" 2. Thêm mới sinh viên")
+    print(" 3. Tìm kiếm sinh viên (Tên/MSSV)")
+    print(" 4. Xóa sinh viên khỏi hệ thống")
+    print(" 0. Lưu dữ liệu và Thoát")
+    print("-" * 55)
 
-    def xoa_sinh_vien(self):
-        mssv = input("\nNhập MSSV cần xóa: ")
-        for sv in self.danh_sach:
-            if sv.mssv == mssv:
-                self.danh_sach.remove(sv)
-                self.save_data()
-                print("Đã xóa thành công!")
-                return
-        print("Không tìm thấy sinh viên có MSSV này.")
-
-# ================== GIAO DIỆN MENU ==================
 def main():
-    qlsv = QuanLySinhVien()
+    ql = QuanLySinhVien()
     
     while True:
-        print("\n" + "="*30)
-        print("   HỆ THỐNG QUẢN LÝ SINH VIÊN")
-        print("="*30)
-        print("1. Xem danh sách sinh viên")
-        print("2. Thêm sinh viên mới")
-        print("3. Tìm kiếm sinh viên")
-        print("4. Xóa sinh viên")
-        print("0. Thoát")
-        print("="*30)
-        
-        lua_chon = input("Chọn chức năng (0-4): ")
+        hien_thi_menu()
+        lua_chon = input("Nhập lựa chọn của bạn (0-4): ").strip()
         
         if lua_chon == "1":
-            qlsv.hien_thi_danh_sach()
+            print(f"\n{'--- DANH SÁCH SINH VIÊN ---':^55}")
+            if not ql.danh_sach:
+                print(" Hiện tại chưa có dữ liệu sinh viên.")
+            else:
+                # Tiêu đề bảng
+                print(f"{'MSSV':<10} | {'Họ và Tên':<20} | {'Lớp':<10} | {'GPA'}")
+                print("-" * 55)
+                for sv in ql.danh_sach:
+                    print(sv)
+            input("\nNhấn Enter để tiếp tục...")
+
         elif lua_chon == "2":
-            qlsv.them_sinh_vien()
+            print("\n[THÊM SINH VIÊN MỚI]")
+            mssv = input(" - Nhập MSSV: ").strip()
+            if any(sv.mssv == mssv for sv in ql.danh_sach):
+                print(" >> Lỗi: MSSV này đã tồn tại trong hệ thống!")
+            else:
+                ten = input(" - Nhập Họ và Tên: ").strip()
+                lop = input(" - Nhập Lớp: ").strip()
+                try:
+                    diem = float(input(" - Nhập Điểm trung bình (0-10): "))
+                    if 0 <= diem <= 10:
+                        ql.danh_sach.append(SinhVien(mssv, ten, lop=lop, diem_tb=diem))
+                        ql.save_data()
+                        print(" >> Đã thêm sinh viên thành công!")
+                    else:
+                        print(" >> Lỗi: Điểm không hợp lệ.")
+                except ValueError:
+                    print(" >> Lỗi: Điểm phải là một số thực.")
+            input("\nNhấn Enter để tiếp tục...")
+
         elif lua_chon == "3":
-            qlsv.tim_kiem_sinh_vien()
+            tu_khoa = input("\nNhập MSSV hoặc Tên cần tìm: ")
+            ket_qua = [sv for sv in ql.danh_sach if sv.matches(tu_khoa)]
+            print(f" >> Tìm thấy {len(ket_qua)} kết quả phù hợp.")
+            for sv in ket_qua:
+                print(sv)
+            input("\nNhấn Enter để tiếp tục...")
+
         elif lua_chon == "4":
-            qlsv.xoa_sinh_vien()
+            mssv_xoa = input("\nNhập MSSV của sinh viên cần xóa: ").strip()
+            if ql.xoa_sinh_vien(mssv_xoa):
+                print(f" >> Đã xóa thành công sinh viên có mã {mssv_xoa}.")
+            else:
+                print(" >> Lỗi: Không tìm thấy sinh viên với MSSV đã nhập.")
+            input("\nNhấn Enter để tiếp tục...")
+
         elif lua_chon == "0":
-            print("Tạm biệt!")
+            print(" Đang đóng chương trình. Hẹn gặp lại!")
             break
         else:
-            print("Lựa chọn không hợp lệ, vui lòng thử lại.")
+            print(" Lựa chọn không hợp lệ, vui lòng nhập từ 0 đến 4.")
+            input("\nNhấn Enter để thử lại...")
+        clear_screen()
 
 if __name__ == "__main__":
     main()
