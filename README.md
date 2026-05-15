@@ -10,7 +10,7 @@ Thực hành review code và version control
 
 Nhóm gồm 4 thành viên:
 
-Nguyễn Văn A
+Lê Văn Hữu Phúc
 Phùng Lê Phi - 24521324
 Lê Văn C
 Hoàng Thi D
