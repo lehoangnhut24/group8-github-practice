@@ -14,4 +14,4 @@ Nhóm gồm 4 thành viên:
 Nguyễn Văn A
 Trần Thị B
 Lê Văn C
-Đoàn Xuân Chiến - 24520217
+Nguyễn Văn D
