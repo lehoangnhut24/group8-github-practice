@@ -12,5 +12,5 @@ Nhóm gồm 4 thành viên:
 
 Lê Văn Hữu Phúc
 Phùng Lê Phi - 24521324
-Lê Văn C
+Lê Hoàng Nhựt-24521284
 Hoàng Thi D
